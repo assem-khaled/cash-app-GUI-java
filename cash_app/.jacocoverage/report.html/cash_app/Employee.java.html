@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Employee.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;cash_app&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">cash_app</a> &gt; <span class="el_source">Employee.java</span></div><h1>Employee.java</h1><pre class="source lang-java linenums">package cash_app;
+import java.sql.*;
+/**
+ *
+ * @author Assem
+ */
+<span class="fc" id="L7">public class Employee {</span>
+    boolean emp_sign_in(String id, String passw) throws SQLException
+    {
+<span class="fc" id="L10">        String path = &quot;jdbc:derby://localhost:1527/cash_db&quot;;</span>
+<span class="fc" id="L11">        String user = &quot;team&quot;;</span>
+<span class="fc" id="L12">        String pass = &quot;1234&quot;;</span>
+        
+<span class="fc" id="L14">        Connection con = DriverManager.getConnection(path, user, pass);</span>
+<span class="fc" id="L15">        Statement st = con.createStatement();</span>
+        
+<span class="fc" id="L17">        ResultSet sss = st.executeQuery(&quot;SELECT * FROM employee WHERE eid = &quot;+ id);</span>
+<span class="fc" id="L18">        sss.next();</span>
+        
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        if ( passw.equals(sss.getString(&quot;password&quot;)))</span>
+<span class="fc" id="L21">            return true;</span>
+        else
+<span class="fc" id="L23">            return false;</span>
+    }
+    
+    String[] view_customer_data(String id) throws SQLException
+    {
+<span class="fc" id="L28">        String path = &quot;jdbc:derby://localhost:1527/cash_db&quot;;</span>
+<span class="fc" id="L29">        String user = &quot;team&quot;;</span>
+<span class="fc" id="L30">        String pass = &quot;1234&quot;;  </span>
+        
+<span class="fc" id="L32">        Connection con = DriverManager.getConnection(path, user, pass);</span>
+<span class="fc" id="L33">        Statement st = con.createStatement();</span>
+        
+<span class="fc" id="L35">        ResultSet sss = st.executeQuery(&quot;SELECT * FROM customer WHERE cid = &quot;+ id);</span>
+        
+<span class="fc" id="L37">        sss.next();</span>
+<span class="fc" id="L38">        String temp [] = new String[5];</span>
+        
+<span class="fc" id="L40">        temp[0] = sss.getString(&quot;cid&quot;);</span>
+<span class="fc" id="L41">        temp[1] = sss.getString(&quot;password&quot;);</span>
+<span class="fc" id="L42">        temp[2] = sss.getString(&quot;name&quot;);</span>
+<span class="fc" id="L43">        temp[3] = sss.getString(&quot;balance&quot;);</span>
+<span class="fc" id="L44">        temp[4] = sss.getString(&quot;address&quot;);</span>
+
+<span class="fc" id="L46">        return temp;</span>
+    }
+    
+    void delete_customer(String id, String emp_id) throws SQLException
+    {
+<span class="fc" id="L51">        String path = &quot;jdbc:derby://localhost:1527/cash_db&quot;;</span>
+<span class="fc" id="L52">        String user = &quot;team&quot;;</span>
+<span class="fc" id="L53">        String pass = &quot;1234&quot;;        </span>
+        
+<span class="fc" id="L55">        Connection con = DriverManager.getConnection(path, user, pass);</span>
+        
+<span class="fc" id="L57">        Statement st = con.createStatement();</span>
+<span class="fc" id="L58">        ResultSet sss = st.executeQuery(&quot;SELECT * FROM customer WHERE cid = &quot;+ id);</span>
+<span class="fc" id="L59">        sss.next();</span>
+<span class="fc" id="L60">        sss.getString(1);</span>
+        
+<span class="fc" id="L62">        PreparedStatement pst = con.prepareStatement(&quot;DELETE FROM customer WHERE CID = &quot;+ id);</span>
+<span class="fc" id="L63">        pst.execute();</span>
+        
+<span class="fc" id="L65">        PreparedStatement pst2 = con.prepareStatement(&quot;INSERT INTO modify_customer VALUES(?, ?)&quot;);</span>
+        
+<span class="fc" id="L67">        pst2.setInt(1, Integer.valueOf(emp_id));</span>
+<span class="fc" id="L68">        pst2.setInt(2, Integer.valueOf(id));</span>
+<span class="fc" id="L69">        pst2.execute();        </span>
+<span class="fc" id="L70">    }</span>
+    
+      
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

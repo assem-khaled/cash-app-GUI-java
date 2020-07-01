@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Currency.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;cash_app&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">cash_app</a> &gt; <span class="el_source">Currency.java</span></div><h1>Currency.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package cash_app;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+/**
+ *
+ * @author Assem
+ */
+<span class="fc" id="L19">public class Currency {</span>
+    ResultSet show_currency() throws SQLException
+    {
+<span class="fc" id="L22">        String url= &quot;jdbc:derby://localhost:1527/cash_db&quot;;</span>
+<span class="fc" id="L23">        String username= &quot;team&quot;;</span>
+<span class="fc" id="L24">        String password=&quot;1234&quot;;</span>
+        
+<span class="fc" id="L26">        Connection con = DriverManager.getConnection(url,username,password);</span>
+<span class="fc" id="L27">        PreparedStatement pstmt= con.prepareStatement(&quot;SELECT * FROM currency&quot;);</span>
+<span class="fc" id="L28">        ResultSet rs= pstmt.executeQuery();</span>
+        
+<span class="fc" id="L30">        return rs;</span>
+    }
+    
+    void emp_update_currency(String code, String emp_id, String b_price, String s_price) throws SQLException
+    {
+<span class="fc" id="L35">        String path = &quot;jdbc:derby://localhost:1527/cash_db&quot;;</span>
+<span class="fc" id="L36">        String user = &quot;team&quot;;</span>
+<span class="fc" id="L37">        String pass = &quot;1234&quot;;        </span>
+        
+<span class="fc" id="L39">        Connection con = DriverManager.getConnection(path, user, pass);</span>
+        
+<span class="fc" id="L41">        Statement st = con.createStatement();</span>
+<span class="fc" id="L42">        ResultSet sss = st.executeQuery(&quot;SELECT * FROM currency WHERE code = &quot;+ code);</span>
+<span class="fc" id="L43">        sss.next();</span>
+<span class="fc" id="L44">        sss.getString(1);</span>
+        
+<span class="fc" id="L46">        PreparedStatement pst = con.prepareStatement(&quot;UPDATE currency SET buying_price = ?, selling_price = ? WHERE code = &quot;+ code);</span>
+<span class="fc" id="L47">        pst.setFloat(1, Float.valueOf(b_price));</span>
+<span class="fc" id="L48">        pst.setFloat(2, Float.valueOf(s_price));</span>
+        
+<span class="fc" id="L50">        pst.execute();</span>
+
+<span class="fc" id="L52">        PreparedStatement pst2 = con.prepareStatement(&quot;INSERT INTO modify_currency VALUES(?, ?)&quot;);</span>
+        
+<span class="fc" id="L54">        pst2.setInt(1, Integer.valueOf(code));</span>
+<span class="fc" id="L55">        pst2.setInt(2, Integer.valueOf(emp_id));</span>
+<span class="fc" id="L56">        pst2.execute();         </span>
+<span class="fc" id="L57">    }    </span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

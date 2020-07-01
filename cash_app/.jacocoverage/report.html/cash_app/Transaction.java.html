@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Transaction.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;cash_app&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">cash_app</a> &gt; <span class="el_source">Transaction.java</span></div><h1>Transaction.java</h1><pre class="source lang-java linenums">/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package cash_app;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Calendar;
+
+/**
+ *
+ * @author Assem
+ */
+<span class="fc" id="L20">public class Transaction {</span>
+
+    ResultSet emp_show_trans_log() throws SQLException
+    {
+<span class="fc" id="L24">        String url= &quot;jdbc:derby://localhost:1527/cash_db&quot;;</span>
+<span class="fc" id="L25">        String username= &quot;team&quot;;</span>
+<span class="fc" id="L26">        String password=&quot;1234&quot;;</span>
+        
+<span class="fc" id="L28">        Connection con = DriverManager.getConnection(url,username,password);</span>
+<span class="fc" id="L29">        PreparedStatement pstmt= con.prepareStatement(&quot;SELECT * FROM transaction_log&quot;);</span>
+<span class="fc" id="L30">        ResultSet rs= pstmt.executeQuery();</span>
+        
+<span class="fc" id="L32">        return rs;</span>
+    }      
+    
+    String cust_send_money(String signed_id, String id, String amount) throws SQLException
+    {   
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (signed_id.matches(id))</span>
+        {
+<span class="fc" id="L39">            return &quot;Can't send money to yourself !!&quot;;</span>
+        }
+        
+<span class="fc" id="L42">        String path = &quot;jdbc:derby://localhost:1527/cash_db&quot;;</span>
+<span class="fc" id="L43">        String user = &quot;team&quot;;</span>
+<span class="fc" id="L44">        String pass = &quot;1234&quot;;        </span>
+        
+<span class="fc" id="L46">        Connection con = DriverManager.getConnection(path, user, pass);</span>
+        // if ID exists
+<span class="fc" id="L48">        Statement st = con.createStatement();</span>
+<span class="fc" id="L49">        ResultSet rs = st.executeQuery(&quot;SELECT balance FROM customer WHERE cid = &quot;+ id);</span>
+<span class="fc" id="L50">        rs.next();</span>
+<span class="fc" id="L51">        int temp_balance = rs.getInt(&quot;balance&quot;);</span>
+        
+        // check if balance contains the amount
+<span class="fc" id="L54">        ResultSet rs2 = st.executeQuery(&quot;SELECT balance FROM customer WHERE cid = &quot;+ signed_id);</span>
+<span class="fc" id="L55">        rs2.next();</span>
+        
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (Integer.valueOf(amount) &gt; rs2.getInt(&quot;balance&quot;))</span>
+        {
+<span class="fc" id="L59">            return &quot;Insufficient Balance&quot;;</span>
+        }
+        // sending money:       
+<span class="fc" id="L62">        PreparedStatement pst = con.prepareStatement(&quot;UPDATE customer SET balance = ? WHERE cid = &quot;+ signed_id);</span>
+<span class="fc" id="L63">        pst.setInt(1, rs2.getInt(&quot;balance&quot;) - Integer.valueOf(amount));</span>
+<span class="fc" id="L64">        pst.execute();</span>
+        
+<span class="fc" id="L66">        PreparedStatement pst2 = con.prepareStatement(&quot;UPDATE customer SET balance = ? WHERE cid = &quot;+ id);</span>
+<span class="fc" id="L67">        pst2.setInt(1, temp_balance + Integer.valueOf(amount));        </span>
+<span class="fc" id="L68">        pst2.execute();</span>
+        // saving transaction in Database
+        
+<span class="fc" id="L71">        Calendar calendar = Calendar.getInstance();</span>
+<span class="fc" id="L72">        java.sql.Timestamp ourJavaTimestampObject = new java.sql.Timestamp(calendar.getTime().getTime());</span>
+        
+<span class="fc" id="L74">        PreparedStatement pst3 = con.prepareStatement(&quot;INSERT INTO transaction_log(name, trans_cid, amount, date) VALUES(?, ? ,? , ?)&quot;);</span>
+<span class="fc" id="L75">        pst3.setString(1, &quot;Agent Cash Out&quot;);</span>
+<span class="fc" id="L76">        pst3.setInt(2, Integer.valueOf(signed_id));</span>
+<span class="fc" id="L77">        pst3.setInt(3, Integer.valueOf(amount));</span>
+<span class="fc" id="L78">        pst3.setTimestamp(4, ourJavaTimestampObject);</span>
+
+<span class="fc" id="L80">        pst3.execute();</span>
+        
+<span class="fc" id="L82">        return &quot;Transaction Completed Successfully&quot;;</span>
+    }    
+    
+    String cust_donate_money(String signed_id, String org_id, String amount) throws SQLException
+    {   
+<span class="fc" id="L87">        String path = &quot;jdbc:derby://localhost:1527/cash_db&quot;;</span>
+<span class="fc" id="L88">        String user = &quot;team&quot;;</span>
+<span class="fc" id="L89">        String pass = &quot;1234&quot;;        </span>
+        
+<span class="fc" id="L91">        Connection con = DriverManager.getConnection(path, user, pass);</span>
+        // if ID exists
+<span class="fc" id="L93">        Statement st = con.createStatement();</span>
+<span class="fc" id="L94">        ResultSet rs = st.executeQuery(&quot;SELECT money_collected FROM donations WHERE charity_id = &quot;+ org_id);</span>
+<span class="fc" id="L95">        rs.next();</span>
+<span class="fc" id="L96">        int temp_balance = rs.getInt(&quot;money_collected&quot;);</span>
+        
+        // check if balance contains the amount
+<span class="fc" id="L99">        ResultSet rs2 = st.executeQuery(&quot;SELECT balance FROM customer WHERE cid = &quot;+ signed_id);</span>
+<span class="fc" id="L100">        rs2.next();</span>
+        
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (Integer.valueOf(amount) &gt; rs2.getInt(&quot;balance&quot;))</span>
+        {
+<span class="fc" id="L104">            return &quot;Insufficient Balance&quot;;</span>
+        }
+        // sending money:       
+<span class="fc" id="L107">        PreparedStatement pst = con.prepareStatement(&quot;UPDATE customer SET balance = ? WHERE cid = &quot;+ signed_id);</span>
+<span class="fc" id="L108">        pst.setInt(1, rs2.getInt(&quot;balance&quot;) - Integer.valueOf(amount));</span>
+<span class="fc" id="L109">        pst.execute();</span>
+        
+<span class="fc" id="L111">        PreparedStatement pst2 = con.prepareStatement(&quot;UPDATE donations SET money_collected = ? WHERE charity_id = &quot;+ org_id);</span>
+<span class="fc" id="L112">        pst2.setInt(1, temp_balance + Integer.valueOf(amount));        </span>
+<span class="fc" id="L113">        pst2.execute();</span>
+        // saving transaction in Database
+        
+<span class="fc" id="L116">        Calendar calendar = Calendar.getInstance();</span>
+<span class="fc" id="L117">        java.sql.Timestamp ourJavaTimestampObject = new java.sql.Timestamp(calendar.getTime().getTime());</span>
+        
+<span class="fc" id="L119">        PreparedStatement pst3 = con.prepareStatement(&quot;INSERT INTO transaction_log(name, trans_cid, amount, date) VALUES(?, ? ,? , ?)&quot;);</span>
+<span class="fc" id="L120">        pst3.setString(1, &quot;Donation&quot;);</span>
+<span class="fc" id="L121">        pst3.setInt(2, Integer.valueOf(signed_id));</span>
+<span class="fc" id="L122">        pst3.setInt(3, Integer.valueOf(amount));</span>
+<span class="fc" id="L123">        pst3.setTimestamp(4, ourJavaTimestampObject);</span>
+
+<span class="fc" id="L125">        pst3.execute();</span>
+        
+<span class="fc" id="L127">        PreparedStatement pst4 = con.prepareStatement(&quot;INSERT INTO donate VALUES(?, ?)&quot;);</span>
+        
+<span class="fc" id="L129">        pst4.setInt(1, Integer.valueOf(signed_id));</span>
+<span class="fc" id="L130">        pst4.setInt(2, Integer.valueOf(org_id));</span>
+<span class="fc" id="L131">        pst4.execute();  </span>
+        
+<span class="fc" id="L133">        return &quot;Transaction Completed Successfully&quot;;</span>
+    }    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
